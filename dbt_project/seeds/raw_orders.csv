@@ -1,0 +1,31 @@
+order_id,customer_id,order_date,status,shipping_address,shipping_city,shipping_state,shipping_country,shipping_method,discount_code,discount_amount,tax_amount,created_at,updated_at
+1001,1,2023-02-10,completed,123 Oak St,Los Angeles,CA,US,standard,,0.00,14.25,2023-02-10,2023-02-14
+1002,2,2023-02-14,completed,456 Maple Ave,New York,NY,US,express,,0.00,35.99,2023-02-14,2023-02-16
+1003,3,2023-03-01,completed,789 Pine Rd,Austin,TX,US,standard,SAVE10,10.00,22.50,2023-03-01,2023-03-06
+1004,4,2023-03-15,completed,321 Elm Dr,Miami,FL,US,standard,,0.00,27.00,2023-03-15,2023-03-20
+1005,5,2023-04-02,completed,654 Cedar Ln,Seattle,WA,US,express,SPRING15,15.00,18.75,2023-04-02,2023-04-04
+1006,6,2023-04-18,cancelled,987 Birch Blvd,Chicago,IL,US,standard,,0.00,0.00,2023-04-18,2023-04-19
+1007,7,2023-05-05,completed,147 Spruce Way,Atlanta,GA,US,standard,,0.00,30.00,2023-05-05,2023-05-10
+1008,8,2023-05-22,completed,258 Willow St,Denver,CO,US,express,,0.00,40.00,2023-05-22,2023-05-24
+1009,9,2023-06-10,completed,369 Ash Ave,Portland,OR,US,standard,SUMMER20,20.00,12.00,2023-06-10,2023-06-15
+1010,10,2023-06-28,completed,741 Poplar Dr,Phoenix,AZ,US,standard,,0.00,15.00,2023-06-28,2023-07-03
+1011,1,2023-07-15,completed,123 Oak St,Los Angeles,CA,US,overnight,,0.00,55.00,2023-07-15,2023-07-16
+1012,2,2023-07-30,completed,456 Maple Ave,New York,NY,US,standard,,0.00,4.50,2023-07-30,2023-08-04
+1013,11,2023-08-12,completed,852 Magnolia Ct,Charlotte,NC,US,standard,,0.00,22.00,2023-08-12,2023-08-17
+1014,12,2023-08-28,returned,963 Dogwood Pl,Boston,MA,US,express,,0.00,0.00,2023-08-28,2023-09-05
+1015,13,2023-09-14,completed,159 Hickory Rd,Detroit,MI,US,standard,FALL10,10.00,38.00,2023-09-14,2023-09-19
+1016,14,2023-10-01,completed,267 Pecan St,Minneapolis,MN,US,standard,,0.00,44.99,2023-10-01,2023-10-06
+1017,15,2023-10-18,completed,375 Chestnut Blvd,Richmond,VA,US,express,,0.00,15.00,2023-10-18,2023-10-20
+1018,16,2023-11-03,completed,483 Walnut Ave,Las Vegas,NV,US,standard,,0.00,18.00,2023-11-03,2023-11-08
+1019,17,2023-11-22,completed,591 Sycamore Dr,Columbus,OH,US,standard,HOLIDAY25,25.00,32.00,2023-11-22,2023-11-27
+1020,18,2023-12-08,completed,699 Linden Ln,Nashville,TN,US,overnight,,0.00,60.00,2023-12-08,2023-12-09
+1021,19,2023-12-22,completed,807 Hackberry St,St. Louis,MO,US,standard,,0.00,25.00,2023-12-22,2023-12-27
+1022,20,2024-01-08,completed,915 Mulberry Ave,Indianapolis,IN,US,express,,0.00,10.00,2024-01-08,2024-01-10
+1023,1,2024-01-25,completed,123 Oak St,Los Angeles,CA,US,standard,NEWYEAR10,10.00,14.00,2024-01-25,2024-01-30
+1024,3,2024-02-14,completed,789 Pine Rd,Austin,TX,US,express,,0.00,18.00,2024-02-14,2024-02-16
+1025,5,2024-03-01,completed,654 Cedar Ln,Seattle,WA,US,standard,,0.00,8.00,2024-03-01,2024-03-06
+1026,7,2024-03-18,completed,147 Spruce Way,Atlanta,GA,US,standard,,0.00,5.00,2024-03-18,2024-03-23
+1027,9,2024-04-05,processing,369 Ash Ave,Portland,OR,US,standard,,0.00,12.00,2024-04-05,2024-04-05
+1028,11,2024-04-22,completed,852 Magnolia Ct,Charlotte,NC,US,express,,0.00,5.00,2024-04-22,2024-04-24
+1029,13,2024-05-10,completed,159 Hickory Rd,Detroit,MI,US,standard,SPRING10,10.00,22.00,2024-05-10,2024-05-15
+1030,15,2024-06-01,completed,375 Chestnut Blvd,Richmond,VA,US,standard,,0.00,30.00,2024-06-01,2024-06-06

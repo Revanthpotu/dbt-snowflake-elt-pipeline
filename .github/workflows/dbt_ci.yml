@@ -1,0 +1,86 @@
+name: dbt CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-ci:
+    name: dbt Lint, Run & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dbt dependencies
+        run: |
+          pip install \
+            dbt-core==1.8.3 \
+            dbt-duckdb==1.8.1 \
+            sqlfluff==3.0.7 \
+            sqlfluff-templater-dbt==3.0.7
+
+      - name: Install dbt packages
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt deps
+
+      - name: dbt debug (validate connection + config)
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt debug --target dev
+
+      - name: dbt seed
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt seed --target dev
+
+      - name: dbt run (all models)
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt run --target dev
+
+      - name: dbt test (all tests)
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt test --target dev
+
+      - name: dbt docs generate
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: dbt docs generate --target dev
+
+      - name: Upload dbt docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: dbt_project/target/
+          retention-days: 7
+
+      - name: SQLFluff lint
+        working-directory: dbt_project
+        env:
+          DBT_PROFILES_DIR: .
+        run: |
+          sqlfluff lint models/ \
+            --dialect duckdb \
+            --templater dbt \
+            --exclude-rules L031 \
+            --warn-unused-ignores || true
+        # `|| true` prevents CI failure on lint warnings;
+        # remove it to enforce strict linting

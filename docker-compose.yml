@@ -1,0 +1,86 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# dbt-snowflake-elt-pipeline — Docker Compose
+#
+# Services:
+#   dbt-run   → seed + run + test (default)
+#   dbt-docs  → generate and serve dbt docs at http://localhost:8080
+#   dbt-debug → interactive shell for manual dbt commands
+# ─────────────────────────────────────────────────────────────────────────────
+
+x-dbt-env: &dbt-env
+  DBT_PROFILES_DIR: /usr/app/dbt_project
+  DBT_PROJECT_DIR: /usr/app/dbt_project
+  DBT_DUCKDB_PATH: /usr/app/dbt_project/dev.duckdb
+  # ── Optional: Snowflake credentials (only needed for --target prod) ──────
+  SNOWFLAKE_ACCOUNT: ${SNOWFLAKE_ACCOUNT:-not_set}
+  SNOWFLAKE_USER: ${SNOWFLAKE_USER:-not_set}
+  SNOWFLAKE_PASSWORD: ${SNOWFLAKE_PASSWORD:-not_set}
+  SNOWFLAKE_ROLE: ${SNOWFLAKE_ROLE:-TRANSFORMER}
+  SNOWFLAKE_DATABASE: ${SNOWFLAKE_DATABASE:-ANALYTICS}
+  SNOWFLAKE_WAREHOUSE: ${SNOWFLAKE_WAREHOUSE:-COMPUTE_WH}
+
+x-dbt-volumes: &dbt-volumes
+  - ./dbt_project:/usr/app/dbt_project
+
+services:
+
+  # ── Full pipeline: seed → run → test ──────────────────────────────────────
+  dbt-run:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: dbt_pipeline_run
+    environment:
+      <<: *dbt-env
+    volumes: *dbt-volumes
+    command: >
+      bash -c "
+        cd /usr/app/dbt_project &&
+        echo '📦 Installing dbt packages...' &&
+        dbt deps &&
+        echo '🌱 Seeding raw data...' &&
+        dbt seed --target dev &&
+        echo '🏗️  Running models...' &&
+        dbt run --target dev &&
+        echo '🧪 Running tests...' &&
+        dbt test --target dev &&
+        echo '✅ Pipeline complete!'
+      "
+
+  # ── Generate + serve dbt docs at http://localhost:8080 ────────────────────
+  dbt-docs:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: dbt_docs_server
+    environment:
+      <<: *dbt-env
+    volumes: *dbt-volumes
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "
+        cd /usr/app/dbt_project &&
+        dbt deps &&
+        dbt seed --target dev --quiet &&
+        dbt run --target dev --quiet &&
+        dbt docs generate --target dev &&
+        echo '📚 Docs available at http://localhost:8080' &&
+        dbt docs serve --port 8080 --no-browser
+      "
+
+  # ── Interactive shell for manual dbt commands ─────────────────────────────
+  dbt-debug:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: dbt_debug_shell
+    environment:
+      <<: *dbt-env
+    volumes: *dbt-volumes
+    working_dir: /usr/app/dbt_project
+    entrypoint: bash
+    stdin_open: true
+    tty: true

@@ -1,0 +1,37 @@
+# ── dbt ─────────────────────────────────────────────────
+target/
+dbt_packages/
+logs/
+*.duckdb
+profiles.yml        # never commit credentials
+
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+.env
+
+# ── Environment files ────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Docker ──────────────────────────────────────────────
+.docker/
+
+# ── OS ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+
+# ── IDE ─────────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace

@@ -1,0 +1,34 @@
+ecommerce_pipeline:
+  target: dev
+
+  outputs:
+
+    # ─────────────────────────────────────────────────────────────────
+    # LOCAL DEVELOPMENT — DuckDB (no credentials needed)
+    #
+    # Docker:  path is /usr/app/dbt_project/dev.duckdb  (set via env var)
+    # Native:  path is dev.duckdb  (relative to dbt_project/ directory)
+    #
+    # Override with: export DBT_DUCKDB_PATH=/your/custom/path.duckdb
+    # ─────────────────────────────────────────────────────────────────
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'dev.duckdb') }}"
+      threads: 4
+
+    # ─────────────────────────────────────────────────────────────────
+    # PRODUCTION — Snowflake
+    # Set env vars before running: dbt run --target prod
+    # ─────────────────────────────────────────────────────────────────
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'ANALYTICS') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+      schema: dbt_dev
+      threads: 8
+      client_session_keep_alive: false
+      query_tag: dbt_ecommerce_pipeline

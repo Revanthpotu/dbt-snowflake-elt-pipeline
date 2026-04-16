@@ -1,0 +1,16 @@
+product_id,product_name,category,subcategory,unit_price,cost_price,sku,is_active,created_at
+101,Wireless Noise-Cancelling Headphones,Electronics,Audio,149.99,62.00,SKU-ELEC-001,true,2023-01-01
+102,Mechanical Keyboard - TKL,Electronics,Peripherals,89.99,34.00,SKU-ELEC-002,true,2023-01-01
+103,4K USB-C Monitor 27in,Electronics,Displays,399.99,180.00,SKU-ELEC-003,true,2023-01-01
+104,Ergonomic Mesh Office Chair,Furniture,Seating,299.99,110.00,SKU-FURN-001,true,2023-01-01
+105,Standing Desk Converter,Furniture,Desks,189.99,75.00,SKU-FURN-002,true,2023-01-01
+106,Yoga Mat Premium,Sports,Fitness,49.99,15.00,SKU-SPRT-001,true,2023-01-01
+107,Resistance Band Set (5 bands),Sports,Fitness,29.99,8.50,SKU-SPRT-002,true,2023-01-01
+108,Stainless Steel Water Bottle 32oz,Sports,Hydration,24.99,7.00,SKU-SPRT-003,true,2023-01-01
+109,Python Programming Book,Books,Technology,44.99,12.00,SKU-BOOK-001,true,2023-01-01
+110,Data Engineering Fundamentals,Books,Technology,54.99,15.00,SKU-BOOK-002,true,2023-01-01
+111,Scented Soy Candle Set,Home,Decor,34.99,9.00,SKU-HOME-001,true,2023-01-01
+112,Bamboo Cutting Board Large,Home,Kitchen,27.99,8.00,SKU-HOME-002,true,2023-01-01
+113,Smart LED Desk Lamp,Electronics,Lighting,59.99,22.00,SKU-ELEC-004,true,2023-02-01
+114,Laptop Stand Aluminum,Electronics,Peripherals,39.99,12.00,SKU-ELEC-005,true,2023-02-01
+115,Foam Roller - Deep Tissue,Sports,Recovery,35.99,10.00,SKU-SPRT-004,false,2023-03-01

@@ -1,0 +1,128 @@
+version: 2
+
+sources:
+  - name: raw_seeds
+    description: >
+      Raw seed data representing ingested source system tables for the
+      e-commerce platform. In production these would be loaded via Fivetran,
+      Airbyte, or Snowpipe from operational databases.
+    schema: raw_seeds
+    tags: ["raw", "seeds"]
+
+    tables:
+      - name: raw_customers
+        description: >
+          Customer master data from the CRM / operational database.
+          One row per customer. Includes PII fields (email, phone).
+        columns:
+          - name: customer_id
+            description: Surrogate primary key for each customer.
+            tests:
+              - not_null
+              - unique
+          - name: email
+            description: Customer email address. Must be unique per customer.
+            tests:
+              - not_null
+              - unique
+          - name: country
+            description: Two-letter ISO country code.
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['US', 'CA', 'GB', 'AU', 'DE', 'FR']
+          - name: is_active
+            description: Whether the customer account is currently active.
+            tests:
+              - not_null
+
+      - name: raw_products
+        description: >
+          Product catalog from the inventory management system.
+          One row per product SKU.
+        columns:
+          - name: product_id
+            description: Surrogate primary key for each product.
+            tests:
+              - not_null
+              - unique
+          - name: sku
+            description: Human-readable stock-keeping unit identifier.
+            tests:
+              - not_null
+              - unique
+          - name: category
+            description: Top-level product category.
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['Electronics', 'Furniture', 'Sports', 'Books', 'Home', 'Clothing', 'Beauty']
+          - name: unit_price
+            description: Current selling price in USD.
+            tests:
+              - not_null
+
+      - name: raw_orders
+        description: >
+          Order header records from the order management system (OMS).
+          One row per order. Does NOT contain line items.
+        columns:
+          - name: order_id
+            description: Surrogate primary key for each order.
+            tests:
+              - not_null
+              - unique
+          - name: customer_id
+            description: Foreign key referencing raw_customers.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw_seeds', 'raw_customers')
+                  field: customer_id
+          - name: status
+            description: Current fulfillment status of the order.
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['completed', 'processing', 'cancelled', 'returned', 'pending']
+          - name: order_date
+            description: Calendar date the order was placed (UTC).
+            tests:
+              - not_null
+
+      - name: raw_order_items
+        description: >
+          Individual line items within each order. One row per
+          product–order combination. Used to calculate order totals.
+        columns:
+          - name: order_item_id
+            description: Surrogate primary key for each line item.
+            tests:
+              - not_null
+              - unique
+          - name: order_id
+            description: Foreign key referencing raw_orders.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw_seeds', 'raw_orders')
+                  field: order_id
+          - name: product_id
+            description: Foreign key referencing raw_products.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw_seeds', 'raw_products')
+                  field: product_id
+          - name: quantity
+            description: Number of units ordered for this line item.
+            tests:
+              - not_null
+          - name: unit_price
+            description: Price per unit at time of order (may differ from current catalog price).
+            tests:
+              - not_null
+          - name: line_total
+            description: quantity * unit_price. Pre-calculated in source system.
+            tests:
+              - not_null

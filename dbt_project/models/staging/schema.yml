@@ -1,0 +1,182 @@
+version: 2
+
+models:
+
+  # ────────────────────────────────────────────────────────
+  # stg_customers
+  # ────────────────────────────────────────────────────────
+  - name: stg_customers
+    description: >
+      Cleaned and type-cast customer records. One row per customer.
+      Derived columns include `full_name` and normalised `is_active` boolean.
+      PII fields (email, phone) are preserved at this layer.
+    tags: ["staging", "customers"]
+    columns:
+      - name: customer_id
+        description: Primary key — unique integer identifier for each customer.
+        tests:
+          - not_null
+          - unique
+      - name: full_name
+        description: Concatenation of first_name and last_name with a space.
+        tests:
+          - not_null
+      - name: email
+        description: Lower-cased customer email address.
+        tests:
+          - not_null
+          - unique
+      - name: country
+        description: Upper-cased two-letter ISO country code.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['US', 'CA', 'GB', 'AU', 'DE', 'FR']
+      - name: is_active
+        description: True when the customer account is active.
+        tests:
+          - not_null
+      - name: created_at
+        description: Date the customer account was created.
+        tests:
+          - not_null
+
+  # ────────────────────────────────────────────────────────
+  # stg_products
+  # ────────────────────────────────────────────────────────
+  - name: stg_products
+    description: >
+      Cleaned product catalog records with derived gross margin percentage.
+      One row per product SKU. Inactive products (is_active = false) are
+      retained to support historical order analysis.
+    tags: ["staging", "products"]
+    columns:
+      - name: product_id
+        description: Primary key — unique integer identifier for each product.
+        tests:
+          - not_null
+          - unique
+      - name: sku
+        description: Human-readable stock-keeping unit code.
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: Display name of the product.
+        tests:
+          - not_null
+      - name: category
+        description: Top-level product category (title-cased).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Electronics', 'Furniture', 'Sports', 'Books', 'Home', 'Clothing', 'Beauty']
+      - name: unit_price
+        description: Current selling price in USD.
+        tests:
+          - not_null
+      - name: cost_price
+        description: Cost of goods sold (COGS) per unit in USD.
+        tests:
+          - not_null
+      - name: gross_margin_pct
+        description: >
+          (unit_price - cost_price) / unit_price * 100.
+          Represents the gross margin as a percentage rounded to 2 decimal places.
+
+  # ────────────────────────────────────────────────────────
+  # stg_orders
+  # ────────────────────────────────────────────────────────
+  - name: stg_orders
+    description: >
+      Cleaned order header records. One row per order.
+      Boolean convenience flags (is_completed, is_cancelled, is_returned,
+      is_processing) and parsed date-part columns are added for downstream
+      aggregations. Does not contain line-item detail.
+    tags: ["staging", "orders"]
+    columns:
+      - name: order_id
+        description: Primary key — unique integer identifier for each order.
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Foreign key referencing stg_customers.customer_id.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: status
+        description: Current fulfillment status of the order (lower-cased).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'processing', 'cancelled', 'returned', 'pending']
+      - name: order_date
+        description: Date the order was placed (UTC).
+        tests:
+          - not_null
+      - name: order_year
+        description: Calendar year extracted from order_date.
+      - name: order_month
+        description: Calendar month (1–12) extracted from order_date.
+      - name: order_quarter
+        description: Calendar quarter (1–4) extracted from order_date.
+      - name: shipping_method
+        description: Shipping tier selected by the customer.
+        tests:
+          - accepted_values:
+              values: ['standard', 'express', 'overnight', 'pickup']
+      - name: discount_amount
+        description: Dollar value of the discount applied to the order.
+      - name: tax_amount
+        description: Tax amount charged on the order in USD.
+      - name: has_discount
+        description: True when a discount code was applied to the order.
+
+  # ────────────────────────────────────────────────────────
+  # stg_order_items
+  # ────────────────────────────────────────────────────────
+  - name: stg_order_items
+    description: >
+      Cleaned order line-item records. One row per order–product combination.
+      Includes a derived `calculated_line_total` and a `line_total_matches`
+      boolean data-quality flag for pipeline monitoring.
+    tags: ["staging", "orders"]
+    columns:
+      - name: order_item_id
+        description: Primary key — unique integer identifier for each line item.
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        description: Foreign key referencing stg_orders.order_id.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: product_id
+        description: Foreign key referencing stg_products.product_id.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+      - name: quantity
+        description: Number of units purchased for this line item.
+        tests:
+          - not_null
+      - name: unit_price
+        description: Price per unit at the time of order.
+        tests:
+          - not_null
+      - name: line_total
+        description: As-stored line total from the source system (quantity * unit_price).
+        tests:
+          - not_null
+      - name: calculated_line_total
+        description: Recalculated line total (quantity * unit_price) for DQ comparison.
+      - name: line_total_matches
+        description: True when the source line_total matches the recalculated value within $0.01.

@@ -1,0 +1,162 @@
+version: 2
+
+models:
+
+  # ────────────────────────────────────────────────────────
+  # fct_orders
+  # ────────────────────────────────────────────────────────
+  - name: fct_orders
+    description: >
+      Central fact table. One row per order, joining order headers with
+      aggregated line-item financials and customer geography. This is the
+      primary table for order-level reporting and downstream mart derivation.
+    tags: ["marts", "finance", "orders"]
+    columns:
+      - name: order_id
+        description: Primary key — unique integer identifier for each order.
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Foreign key referencing dim_customers.customer_id.
+        tests:
+          - not_null
+      - name: order_date
+        description: Date the order was placed.
+        tests:
+          - not_null
+      - name: status
+        description: Fulfillment status of the order.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'processing', 'cancelled', 'returned', 'pending']
+      - name: gross_revenue
+        description: Sum of all line item totals before discounts and tax.
+        tests:
+          - not_null
+      - name: net_revenue
+        description: gross_revenue minus discount_amount plus tax_amount.
+        tests:
+          - not_null
+      - name: item_count
+        description: Number of distinct product SKUs in the order.
+      - name: total_quantity
+        description: Total units purchased across all line items.
+      - name: average_item_value
+        description: gross_revenue divided by item_count.
+      - name: all_items_valid
+        description: >
+          True when every line item's stored line_total matches the
+          recalculated value (quantity * unit_price) within $0.01.
+
+  # ────────────────────────────────────────────────────────
+  # dim_customers
+  # ────────────────────────────────────────────────────────
+  - name: dim_customers
+    description: >
+      Customer dimension enriched with lifetime order metrics and a derived
+      RFM-lite customer segment. One row per customer. Implements a Type 1 SCD
+      (current state only, no history). Safe for BI tool joining.
+    tags: ["marts", "customers"]
+    columns:
+      - name: customer_id
+        description: Primary key — unique integer identifier for each customer.
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: Lower-cased customer email address.
+        tests:
+          - not_null
+          - unique
+      - name: customer_segment
+        description: >
+          Derived RFM-lite segment. Possible values:
+          VIP, High Value, Repeat Buyer, New Customer, No Purchases.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['VIP', 'High Value', 'Repeat Buyer', 'New Customer', 'No Purchases']
+      - name: lifetime_net_revenue
+        description: Total net revenue from completed orders for this customer.
+        tests:
+          - not_null
+      - name: total_orders
+        description: Total order count for this customer (all statuses).
+        tests:
+          - not_null
+      - name: completed_orders
+        description: Count of orders with status = completed.
+        tests:
+          - not_null
+
+  # ────────────────────────────────────────────────────────
+  # mart_product_performance
+  # ────────────────────────────────────────────────────────
+  - name: mart_product_performance
+    description: >
+      Product-level sales performance mart. One row per product.
+      Aggregates completed-order revenue, cost, and profit metrics.
+      Includes a revenue_rank window column for easy Top-N filtering.
+    tags: ["marts", "products", "finance"]
+    columns:
+      - name: product_id
+        description: Primary key — unique integer identifier for each product.
+        tests:
+          - not_null
+          - unique
+      - name: sku
+        description: Human-readable stock-keeping unit code.
+        tests:
+          - not_null
+          - unique
+      - name: total_gross_revenue
+        description: Sum of line_total for this product across all completed orders.
+        tests:
+          - not_null
+      - name: total_gross_profit
+        description: total_gross_revenue minus total_cogs.
+        tests:
+          - not_null
+      - name: realised_margin_pct
+        description: Actual gross margin percentage based on realised revenue.
+      - name: revenue_rank
+        description: Dense rank of products by total_gross_revenue (1 = highest revenue).
+        tests:
+          - not_null
+
+  # ────────────────────────────────────────────────────────
+  # mart_monthly_revenue
+  # ────────────────────────────────────────────────────────
+  - name: mart_monthly_revenue
+    description: >
+      Monthly revenue aggregation mart for executive reporting and trend analysis.
+      One row per calendar month. Includes MoM change percentage and year-to-date
+      cumulative revenue. Only completed orders contribute to revenue metrics;
+      cancelled and returned orders are counted separately.
+    tags: ["marts", "finance", "reporting"]
+    columns:
+      - name: month_start_date
+        description: First calendar day of the reporting month.
+        tests:
+          - not_null
+          - unique
+      - name: completed_orders
+        description: Count of completed orders in the month.
+        tests:
+          - not_null
+      - name: net_revenue
+        description: Total net revenue from completed orders in the month.
+        tests:
+          - not_null
+      - name: avg_order_value
+        description: net_revenue divided by completed_orders.
+      - name: mom_revenue_change_pct
+        description: >
+          Month-over-month percentage change in net_revenue.
+          Null for the first month in the dataset.
+      - name: ytd_net_revenue
+        description: Cumulative net_revenue from January through this month within the same year.
+        tests:
+          - not_null

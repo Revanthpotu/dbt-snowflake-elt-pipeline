@@ -1,0 +1,21 @@
+customer_id,first_name,last_name,email,phone,country,state,city,created_at,is_active
+1,James,Morrison,james.morrison@email.com,555-0101,US,CA,Los Angeles,2023-01-15,true
+2,Sofia,Reyes,sofia.reyes@email.com,555-0102,US,NY,New York,2023-01-22,true
+3,Liam,Chen,liam.chen@email.com,555-0103,US,TX,Austin,2023-02-03,true
+4,Ava,Patel,ava.patel@email.com,555-0104,US,FL,Miami,2023-02-14,true
+5,Noah,Williams,noah.williams@email.com,555-0105,US,WA,Seattle,2023-03-01,true
+6,Emma,Johnson,emma.johnson@email.com,555-0106,US,IL,Chicago,2023-03-15,false
+7,Oliver,Brown,oliver.brown@email.com,555-0107,US,GA,Atlanta,2023-04-02,true
+8,Isabella,Davis,isabella.davis@email.com,555-0108,US,CO,Denver,2023-04-18,true
+9,William,Miller,william.miller@email.com,555-0109,US,OR,Portland,2023-05-05,true
+10,Mia,Wilson,mia.wilson@email.com,555-0110,US,AZ,Phoenix,2023-05-20,true
+11,Benjamin,Moore,benjamin.moore@email.com,555-0111,US,NC,Charlotte,2023-06-08,true
+12,Charlotte,Taylor,charlotte.taylor@email.com,555-0112,US,MA,Boston,2023-06-25,false
+13,Elijah,Anderson,elijah.anderson@email.com,555-0113,US,MI,Detroit,2023-07-10,true
+14,Amelia,Thomas,amelia.thomas@email.com,555-0114,US,MN,Minneapolis,2023-07-28,true
+15,Lucas,Jackson,lucas.jackson@email.com,555-0115,US,VA,Richmond,2023-08-14,true
+16,Harper,White,harper.white@email.com,555-0116,US,NV,Las Vegas,2023-08-30,true
+17,Mason,Harris,mason.harris@email.com,555-0117,US,OH,Columbus,2023-09-12,true
+18,Evelyn,Martin,evelyn.martin@email.com,555-0118,US,TN,Nashville,2023-09-29,true
+19,Logan,Garcia,logan.garcia@email.com,555-0119,US,MO,St. Louis,2023-10-16,true
+20,Abigail,Martinez,abigail.martinez@email.com,555-0120,US,IN,Indianapolis,2023-11-01,true
