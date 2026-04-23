@@ -4,7 +4,7 @@
 > order data across Raw → Staging → Marts layers. Runs locally in **60 seconds**
 > via Docker + DuckDB — no Snowflake account required.
 
-[![dbt CI Pipeline](https://github.com/YOUR_USERNAME/dbt-snowflake-elt-pipeline/actions/workflows/dbt_ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/dbt-snowflake-elt-pipeline/actions)
+[![dbt CI Pipeline](https://github.com/YOUR_USERNAME/dbt-snowflake-elt-pipeline/actions/workflows/dbt_ci.yml/badge.svg)](https://github.com/Revanthpotu/dbt-snowflake-elt-pipeline/actions)
 [![dbt](https://img.shields.io/badge/dbt-1.8-FF694B?logo=dbt)](https://docs.getdbt.com)
 [![Snowflake](https://img.shields.io/badge/Snowflake-ready-29B5E8?logo=snowflake)](https://www.snowflake.com)
 [![DuckDB](https://img.shields.io/badge/DuckDB-local-FCD34D)](https://duckdb.org)
@@ -318,38 +318,7 @@ The generated `target/` artifact (including `catalog.json` and `manifest.json`) 
 
 ---
 
-## Push to GitHub
 
-```bash
-# 1. Initialise git
-cd dbt-snowflake-elt-pipeline
-git init
-git add .
-git commit -m "feat: initial dbt + Snowflake ELT pipeline
-
-- Raw → Staging → Marts model structure
-- 4 staging models + 4 mart models (8 total)
-- 41 tests: not_null, unique, accepted_values, relationships, 3 custom SQL
-- DuckDB local dev + Snowflake prod targets
-- Docker Compose for zero-config local runs
-- GitHub Actions CI on push"
-
-# 2. Create the GitHub repo (requires GitHub CLI)
-gh repo create dbt-snowflake-elt-pipeline \
-  --public \
-  --description "Production-grade dbt ELT pipeline for e-commerce analytics. Raw → Staging → Marts on DuckDB (local) and Snowflake (prod)." \
-  --push \
-  --source .
-
-# 3. (Without GitHub CLI) Add remote manually
-git remote add origin https://github.com/YOUR_USERNAME/dbt-snowflake-elt-pipeline.git
-git branch -M main
-git push -u origin main
-```
-
-### Recommended GitHub Topics
-
-Add these in **Settings → Topics** on your repo page:
 
 ```
 dbt  dbt-core  snowflake  duckdb  data-engineering  elt  analytics-engineering
